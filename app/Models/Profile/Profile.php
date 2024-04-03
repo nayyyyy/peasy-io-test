@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Profile newQuery()
  * @method static Builder|Profile onlyTrashed()
  * @method static Builder|Profile query()
+ * @method static Builder|Profile updatedToday()
  * @method static Builder|Profile whereAge($value)
  * @method static Builder|Profile whereCreatedAt($value)
  * @method static Builder|Profile whereDeletedAt($value)
@@ -68,6 +69,11 @@ final class Profile extends Model
     public function scopeCreatedToday(Builder $query): Builder
     {
         return $query->whereDate('created_at', today());
+    }
+
+    public function scopeUpdatedToday(Builder $query): Builder
+    {
+        return $query->whereDate('updated_at', today());
     }
 
     public function scopeIsFemale(Builder $query): Builder
