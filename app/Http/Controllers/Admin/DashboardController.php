@@ -15,7 +15,7 @@ final class DashboardController extends Controller
     public function index(): View|Application|Factory
     {
         $data = [
-            'maleCount' => Cache::get('male_count'),
+            'maleCount' => Cache::get('male_count') ?? 0,
             'femaleCount' => Cache::get('female_count') ?? 0,
             'total' => array_sum([Cache::get('male_count') ?? 0, Cache::get('female_count') ?? 0])
         ];
