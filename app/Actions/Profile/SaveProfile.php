@@ -28,19 +28,24 @@ final class SaveProfile
 
         $profile->uuid = $data->uuid;
         $profile->name = $data->name;
+        $profile->full_name = $data->full_name;
         $profile->gender = $data->gender;
         $profile->location = $data->location;
         $profile->age = $data->age;
 
-        DB::transaction(fn () => $profile->save());
+        DB::transaction(fn() => $profile->save());
 
         $variableName = "male_count";
 
-        if ( ! $profile->gender) {
+        if (!$profile->gender) {
             $variableName = "female_count";
         }
 
-        Cache::increment($variableName);
+        if (is_null(cache($variableName))) {
+            Cache::forever($variableName, 1);
+        } else {
+            Cache::increment($variableName);
+        }
     }
 
     /**

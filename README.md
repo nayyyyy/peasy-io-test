@@ -12,12 +12,12 @@
     - [x] Code your DailyRecord model object so that whenever male_count and female_count attribute is changed, your
       code will calculate the average age of all male and female records in the User table and store them into the
       male_avg_age and female_avg_age attribute.
-- [ ] Create a simple user interface to:
-    - [ ] Display a table of all users (name, age, gender, created_at) (with search and delete functionality). When the
+- [x] Create a simple user interface to:
+    - [x] Display a table of all users (name, age, gender, created_at) (with search and delete functionality). When the
       user delete an User record, your code must update either the male_count/female_count attribute in the DailyRecord
       table.
-    - [ ] Show the total number of user records on screen (a)
-    - [ ] Display a simple report to display a list of DailyRecord (date, male_avg_count, female_avg_count,
+    - [x] Show the total number of user records on screen (a)
+    - [x] Display a simple report to display a list of DailyRecord (date, male_avg_count, female_avg_count,
       male_avg_age, female_avg_age)
-- [ ] You must deploy your working code in your own computer and server for functional presentation
-- [ ] Commit your code into a git repository and share it with benjamin.fong@peasy.ai
+- [x] You must deploy your working code in your own computer and server for functional presentation
+- [x] Commit your code into a git repository and share it with benjamin.fong@peasy.ai

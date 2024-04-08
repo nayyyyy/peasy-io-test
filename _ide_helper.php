@@ -3981,7 +3981,7 @@ namespace Illuminate\Support\Facades {
          * @static 
          */        public static function lock($name, $seconds = 0, $owner = null)
         {
-                        /** @var \Illuminate\Cache\FileStore $instance */
+                        /** @var \Illuminate\Cache\RedisStore $instance */
                         return $instance->lock($name, $seconds, $owner);
         }
                     /**
@@ -3993,7 +3993,7 @@ namespace Illuminate\Support\Facades {
          * @static 
          */        public static function restoreLock($name, $owner)
         {
-                        /** @var \Illuminate\Cache\FileStore $instance */
+                        /** @var \Illuminate\Cache\RedisStore $instance */
                         return $instance->restoreLock($name, $owner);
         }
                     /**
@@ -4003,50 +4003,70 @@ namespace Illuminate\Support\Facades {
          * @static 
          */        public static function flush()
         {
-                        /** @var \Illuminate\Cache\FileStore $instance */
+                        /** @var \Illuminate\Cache\RedisStore $instance */
                         return $instance->flush();
         }
                     /**
-         * Get the full path for the given cache key.
+         * Remove all expired tag set entries.
          *
-         * @param string $key
-         * @return string 
+         * @return void 
          * @static 
-         */        public static function path($key)
+         */        public static function flushStaleTags()
         {
-                        /** @var \Illuminate\Cache\FileStore $instance */
-                        return $instance->path($key);
+                        /** @var \Illuminate\Cache\RedisStore $instance */
+                        $instance->flushStaleTags();
         }
                     /**
-         * Get the Filesystem instance.
+         * Get the Redis connection instance.
          *
-         * @return \Illuminate\Filesystem\Filesystem 
+         * @return \Illuminate\Redis\Connections\Connection 
          * @static 
-         */        public static function getFilesystem()
+         */        public static function connection()
         {
-                        /** @var \Illuminate\Cache\FileStore $instance */
-                        return $instance->getFilesystem();
+                        /** @var \Illuminate\Cache\RedisStore $instance */
+                        return $instance->connection();
         }
                     /**
-         * Get the working directory of the cache.
+         * Get the Redis connection instance that should be used to manage locks.
          *
-         * @return string 
+         * @return \Illuminate\Redis\Connections\Connection 
          * @static 
-         */        public static function getDirectory()
+         */        public static function lockConnection()
         {
-                        /** @var \Illuminate\Cache\FileStore $instance */
-                        return $instance->getDirectory();
+                        /** @var \Illuminate\Cache\RedisStore $instance */
+                        return $instance->lockConnection();
         }
                     /**
-         * Set the cache directory where locks should be stored.
+         * Specify the name of the connection that should be used to store data.
          *
-         * @param string|null $lockDirectory
-         * @return \Illuminate\Cache\FileStore 
+         * @param string $connection
+         * @return void 
          * @static 
-         */        public static function setLockDirectory($lockDirectory)
+         */        public static function setConnection($connection)
         {
-                        /** @var \Illuminate\Cache\FileStore $instance */
-                        return $instance->setLockDirectory($lockDirectory);
+                        /** @var \Illuminate\Cache\RedisStore $instance */
+                        $instance->setConnection($connection);
+        }
+                    /**
+         * Specify the name of the connection that should be used to manage locks.
+         *
+         * @param string $connection
+         * @return \Illuminate\Cache\RedisStore 
+         * @static 
+         */        public static function setLockConnection($connection)
+        {
+                        /** @var \Illuminate\Cache\RedisStore $instance */
+                        return $instance->setLockConnection($connection);
+        }
+                    /**
+         * Get the Redis database instance.
+         *
+         * @return \Illuminate\Contracts\Redis\Factory 
+         * @static 
+         */        public static function getRedis()
+        {
+                        /** @var \Illuminate\Cache\RedisStore $instance */
+                        return $instance->getRedis();
         }
                     /**
          * Get the cache key prefix.
@@ -4055,8 +4075,19 @@ namespace Illuminate\Support\Facades {
          * @static 
          */        public static function getPrefix()
         {
-                        /** @var \Illuminate\Cache\FileStore $instance */
+                        /** @var \Illuminate\Cache\RedisStore $instance */
                         return $instance->getPrefix();
+        }
+                    /**
+         * Set the cache key prefix.
+         *
+         * @param string $prefix
+         * @return void 
+         * @static 
+         */        public static function setPrefix($prefix)
+        {
+                        /** @var \Illuminate\Cache\RedisStore $instance */
+                        $instance->setPrefix($prefix);
         }
             }
             /**
@@ -17450,6 +17481,87 @@ namespace Lorisleiva\Lody {
             }
     }
 
+namespace Flasher\Laravel\Facade {
+            /**
+     * 
+     *
+     * @method static NotificationBuilder addSuccess(string $message, array $options = array())
+     * @method static NotificationBuilder addError(string $message, array $options = array())
+     * @method static NotificationBuilder addWarning(string $message, array $options = array())
+     * @method static NotificationBuilder addInfo(string $message, array $options = array())
+     * @method static NotificationBuilder addFlash(NotificationInterface|string $type, string $message = null, array $options = array())
+     * @method static NotificationBuilder flash(StampInterface[] $stamps = array())
+     * @method static NotificationBuilder type(string $type, string $message = null, array $options = array())
+     * @method static NotificationBuilder message(string $message)
+     * @method static NotificationBuilder options(array $options, bool $merge = true)
+     * @method static NotificationBuilder option(string $name, $value)
+     * @method static NotificationBuilder success(string $message = null, array $options = array())
+     * @method static NotificationBuilder error(string $message = null, array $options = array())
+     * @method static NotificationBuilder info(string $message = null, array $options = array())
+     * @method static NotificationBuilder warning(string $message = null, array $options = array())
+     * @method static NotificationBuilder priority(int $priority)
+     * @method static NotificationBuilder hops(int $amount)
+     * @method static NotificationBuilder keep()
+     * @method static NotificationBuilder delay(int $delay)
+     * @method static NotificationBuilder now()
+     * @method static NotificationBuilder with(StampInterface[] $stamps = array())
+     * @method static NotificationBuilder withStamp(StampInterface $stamp)
+     * @method static NotificationBuilder handler(string $handler)
+     * @method static Envelope            getEnvelope()
+     */        class Flasher {
+                    /**
+         * Get a driver instance.
+         *
+         * @param string|null $alias
+         * @return \Flasher\Prime\Factory\NotificationFactoryInterface 
+         * @throws \InvalidArgumentException
+         * @static 
+         */        public static function create($alias = null)
+        {
+                        /** @var \Flasher\Prime\Flasher $instance */
+                        return $instance->create($alias);
+        }
+                    /**
+         * Get a driver instance.
+         *
+         * @param string|null $alias
+         * @return \Flasher\Prime\Factory\NotificationFactoryInterface 
+         * @throws \InvalidArgumentException
+         * @static 
+         */        public static function using($alias)
+        {
+                        /** @var \Flasher\Prime\Flasher $instance */
+                        return $instance->using($alias);
+        }
+                    /**
+         * 
+         *
+         * @param array<string, mixed> $criteria
+         * @param string $presenter
+         * @param array<string, mixed> $context
+         * @return mixed 
+         * @phpstan-return ($presenter is 'html' ? string : mixed)
+         * @static 
+         */        public static function render($criteria = [], $presenter = 'html', $context = [])
+        {
+                        /** @var \Flasher\Prime\Flasher $instance */
+                        return $instance->render($criteria, $presenter, $context);
+        }
+                    /**
+         * Register a custom driver creator.
+         *
+         * @param string $alias
+         * @param callable|\Flasher\Prime\Factory\NotificationFactoryInterface $factory
+         * @return static 
+         * @static 
+         */        public static function addFactory($alias, $factory)
+        {
+                        /** @var \Flasher\Prime\Flasher $instance */
+                        return $instance->addFactory($alias, $factory);
+        }
+            }
+    }
+
 namespace Spatie\LaravelIgnition\Facades {
             /**
      * 
@@ -17814,6 +17926,257 @@ namespace Spatie\LaravelIgnition\Facades {
         {
                         /** @var \Spatie\FlareClient\Flare $instance */
                         return $instance->group($groupName, $properties);
+        }
+            }
+    }
+
+namespace Yajra\DataTables\Facades {
+            /**
+     * 
+     *
+     * @mixin \Yajra\DataTables\DataTables
+     * @see \Yajra\DataTables\DataTables
+     */        class DataTables {
+                    /**
+         * Make a DataTable instance from source.
+         * 
+         * Alias of make for backward compatibility.
+         *
+         * @param object $source
+         * @return \Yajra\DataTables\DataTableAbstract 
+         * @throws \Exception
+         * @static 
+         */        public static function of($source)
+        {
+                        return \Yajra\DataTables\DataTables::of($source);
+        }
+                    /**
+         * Make a DataTable instance from source.
+         *
+         * @param object $source
+         * @return \Yajra\DataTables\DataTableAbstract 
+         * @throws \Yajra\DataTables\Exceptions\Exception
+         * @static 
+         */        public static function make($source)
+        {
+                        return \Yajra\DataTables\DataTables::make($source);
+        }
+                    /**
+         * Get request object.
+         *
+         * @return \Yajra\DataTables\Utilities\Request 
+         * @static 
+         */        public static function getRequest()
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        return $instance->getRequest();
+        }
+                    /**
+         * Get config instance.
+         *
+         * @return \Yajra\DataTables\Utilities\Config 
+         * @static 
+         */        public static function getConfig()
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        return $instance->getConfig();
+        }
+                    /**
+         * DataTables using Query.
+         *
+         * @param \Illuminate\Contracts\Database\Query\Builder $builder
+         * @return \Yajra\DataTables\QueryDataTable 
+         * @static 
+         */        public static function query($builder)
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        return $instance->query($builder);
+        }
+                    /**
+         * DataTables using Eloquent Builder.
+         *
+         * @param \Illuminate\Contracts\Database\Eloquent\Builder $builder
+         * @return \Yajra\DataTables\EloquentDataTable 
+         * @static 
+         */        public static function eloquent($builder)
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        return $instance->eloquent($builder);
+        }
+                    /**
+         * DataTables using Collection.
+         *
+         * @param \Illuminate\Support\Collection<array-key, array>|array $collection
+         * @return \Yajra\DataTables\CollectionDataTable 
+         * @static 
+         */        public static function collection($collection)
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        return $instance->collection($collection);
+        }
+                    /**
+         * DataTables using Collection.
+         *
+         * @param \Illuminate\Http\Resources\Json\AnonymousResourceCollection<array-key, array>|array $resource
+         * @return \Yajra\DataTables\ApiResourceDataTable|\Yajra\DataTables\DataTableAbstract 
+         * @static 
+         */        public static function resource($resource)
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        return $instance->resource($resource);
+        }
+                    /**
+         * Get html builder instance.
+         *
+         * @return \Yajra\DataTables\Html\Builder 
+         * @throws \Yajra\DataTables\Exceptions\Exception
+         * @static 
+         */        public static function getHtmlBuilder()
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        return $instance->getHtmlBuilder();
+        }
+                    /**
+         * 
+         *
+         * @param string $engine
+         * @param string $parent
+         * @return void 
+         * @throws \Yajra\DataTables\Exceptions\Exception
+         * @static 
+         */        public static function validateDataTable($engine, $parent)
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        $instance->validateDataTable($engine, $parent);
+        }
+                    /**
+         * 
+         *
+         * @param string $engine
+         * @param string $parent
+         * @return void 
+         * @throws \Yajra\DataTables\Exceptions\Exception
+         * @static 
+         */        public static function throwInvalidEngineException($engine, $parent)
+        {
+                        /** @var \Yajra\DataTables\DataTables $instance */
+                        $instance->throwInvalidEngineException($engine, $parent);
+        }
+                    /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @return void 
+         * @static 
+         */        public static function macro($name, $macro)
+        {
+                        \Yajra\DataTables\DataTables::macro($name, $macro);
+        }
+                    /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void 
+         * @throws \ReflectionException
+         * @static 
+         */        public static function mixin($mixin, $replace = true)
+        {
+                        \Yajra\DataTables\DataTables::mixin($mixin, $replace);
+        }
+                    /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool 
+         * @static 
+         */        public static function hasMacro($name)
+        {
+                        return \Yajra\DataTables\DataTables::hasMacro($name);
+        }
+                    /**
+         * Flush the existing macros.
+         *
+         * @return void 
+         * @static 
+         */        public static function flushMacros()
+        {
+                        \Yajra\DataTables\DataTables::flushMacros();
+        }
+            }
+    }
+
+namespace Yoeunes\Toastr\Facades {
+            /**
+     * 
+     *
+     */        class Toastr {
+                    /**
+         * Shortcut for adding an error notification.
+         *
+         * @param string $message The notification's message
+         * @param string $title The notification's title
+         * @param array<string, mixed> $options The notification's options
+         * @return \Toastr 
+         * @static 
+         */        public static function error($message, $title = '', $options = [])
+        {
+                        /** @var \Yoeunes\Toastr\Toastr $instance */
+                        return $instance->error($message, $title, $options);
+        }
+                    /**
+         * Shortcut for adding an info notification.
+         *
+         * @param string $message The notification's message
+         * @param string $title The notification's title
+         * @param array<string, mixed> $options The notification's options
+         * @return \Toastr 
+         * @static 
+         */        public static function info($message, $title = '', $options = [])
+        {
+                        /** @var \Yoeunes\Toastr\Toastr $instance */
+                        return $instance->info($message, $title, $options);
+        }
+                    /**
+         * Shortcut for adding a success notification.
+         *
+         * @param string $message The notification's message
+         * @param string $title The notification's title
+         * @param array<string, mixed> $options The notification's options
+         * @return \Toastr 
+         * @static 
+         */        public static function success($message, $title = '', $options = [])
+        {
+                        /** @var \Yoeunes\Toastr\Toastr $instance */
+                        return $instance->success($message, $title, $options);
+        }
+                    /**
+         * Shortcut for adding a warning notification.
+         *
+         * @param string $message The notification's message
+         * @param string $title The notification's title
+         * @param array<string, mixed> $options The notification's options
+         * @return \Toastr 
+         * @static 
+         */        public static function warning($message, $title = '', $options = [])
+        {
+                        /** @var \Yoeunes\Toastr\Toastr $instance */
+                        return $instance->warning($message, $title, $options);
+        }
+                    /**
+         * Add a notification.
+         *
+         * @param string $type could be error, info, success, or warning
+         * @param string $message The notification's message
+         * @param string $title The notification's title
+         * @param array<string, mixed> $options The notification's options
+         * @return \Toastr 
+         * @static 
+         */        public static function addNotification($type, $message, $title = '', $options = [])
+        {
+                        /** @var \Yoeunes\Toastr\Toastr $instance */
+                        return $instance->addNotification($type, $message, $title, $options);
         }
             }
     }
@@ -21379,7 +21742,10 @@ namespace  {
             class Horizon extends \Laravel\Horizon\Horizon {}
             class Action extends \Lorisleiva\Actions\Facades\Actions {}
             class Lody extends \Lorisleiva\Lody\Lody {}
+            class Flasher extends \Flasher\Laravel\Facade\Flasher {}
             class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
+            class DataTables extends \Yajra\DataTables\Facades\DataTables {}
+            class Toastr extends \Yoeunes\Toastr\Facades\Toastr {}
     }
 
 

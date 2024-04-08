@@ -13,6 +13,7 @@ final class ProfileData extends Data
         public string $uuid,
         public bool   $gender,
         public array  $name,
+        public string $full_name,
         public array  $location,
         public int    $age,
     ) {
@@ -27,6 +28,7 @@ final class ProfileData extends Data
             uuid: $response['login']['uuid'],
             gender: $gender,
             name: $response['name'],
+            full_name: implode(' ', $response['name']),
             location: $response['location'],
             age: $response['dob']['age']
         );
