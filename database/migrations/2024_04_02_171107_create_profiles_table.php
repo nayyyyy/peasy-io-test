@@ -17,6 +17,7 @@ return new class () extends Migration {
             $table->uuid();
             $table->boolean('gender')->comment('0 is Female and 1 is Male');
             $table->json('name');
+            $table->string('full_name');
             $table->json('location');
             $table->integer('age');
             $table->timestamps();

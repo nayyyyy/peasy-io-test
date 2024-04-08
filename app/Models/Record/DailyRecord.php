@@ -57,7 +57,8 @@ final class DailyRecord extends Model
         'male_count' => 'integer',
         'female_count' => 'integer',
         'male_avg_age' => 'float',
-        'female_avg_age' => 'float'
+        'female_avg_age' => 'float',
+        'created_at' => 'datetime:d-m-Y'
     ];
 
     protected $attributes = [
