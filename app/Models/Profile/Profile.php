@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $uuid
@@ -71,17 +71,37 @@ final class Profile extends Model
         'created_at' => 'datetime:d-m-Y H:i:s'
     ];
 
+    public function scopeCreatedToday(Builder $query): Builder
+    {
+        return $query->whereDate('created_at', today());
+    }
+
+    public function scopeUpdatedToday(Builder $query): Builder
+    {
+        return $query->whereDate('updated_at', today());
+    }
+
+    public function scopeIsFemale(Builder $query): Builder
+    {
+        return $query->where('gender', false);
+    }
+
+    public function scopeIsMale(Builder $query): Builder
+    {
+        return $query->where('gender', true);
+    }
+
     protected static function booted(): void
     {
         parent::booted();
 
-        self::deleted(static function (self $profile) {
+        self::deleted(static function (self $profile): void {
             /** @var DailyRecord $dailyRecord */
             $dailyRecord = DailyRecord::whereDate('created_at', $profile->created_at)->first();
 
             $variableName = 'male_count';
 
-            if (!$profile->gender){
+            if ( ! $profile->gender) {
                 $variableName = 'female_count';
             }
 
@@ -103,25 +123,5 @@ final class Profile extends Model
 
             Cache::decrement($variableName);
         });
-    }
-
-    public function scopeCreatedToday(Builder $query): Builder
-    {
-        return $query->whereDate('created_at', today());
-    }
-
-    public function scopeUpdatedToday(Builder $query): Builder
-    {
-        return $query->whereDate('updated_at', today());
-    }
-
-    public function scopeIsFemale(Builder $query): Builder
-    {
-        return $query->where('gender', false);
-    }
-
-    public function scopeIsMale(Builder $query): Builder
-    {
-        return $query->where('gender', true);
     }
 }

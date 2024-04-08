@@ -8,10 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Profile\Profile;
 use DB;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Throwable;
 
-class ProfileController extends Controller
+final class ProfileController extends Controller
 {
     /**
      * @throws Throwable
@@ -21,10 +20,10 @@ class ProfileController extends Controller
         try {
             $profile = Profile::findOrFail($id);
 
-            DB::transaction(fn()=> $profile->delete());
+            DB::transaction(fn () => $profile->delete());
 
             toastr()->success('Delete success!');
-        } catch (Throwable $throwable){
+        } catch (Throwable $throwable) {
             toastr()->error($throwable->getMessage());
         }
 

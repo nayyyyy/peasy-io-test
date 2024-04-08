@@ -20,23 +20,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', fn() => view('welcome'));
+Route::get('/', fn () => redirect()->route('admin.dashboard.index'));
 
-Route::prefix('admin')->as('admin.')->group(function () {
+Route::prefix('admin')->as('admin.')->group(function (): void {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('report', [ReportController::class, 'index'])->name('report.index');
 
-    Route::prefix('profiles')->as('profiles.')->group(function (){
+    Route::prefix('profiles')->as('profiles.')->group(function (): void {
         Route::delete('{id}', [ProfileController::class, 'destroy'])->name('destroy');
     });
 });
 
-Route::prefix('api')->as('api.')->group(function (){
-    Route::prefix('profiles')->as('profiles.')->group(function (){
-       Route::get('datatable', BrowseProfileController::class)->name('datatable');
+Route::prefix('api')->as('api.')->group(function (): void {
+    Route::prefix('profiles')->as('profiles.')->group(function (): void {
+        Route::get('datatable', BrowseProfileController::class)->name('datatable');
     });
 
-    Route::prefix('daily-records')->as('daily-records.')->group(function (){
-       Route::get('datatable', BrowseDailyRecordController::class)->name('datatable');
+    Route::prefix('daily-records')->as('daily-records.')->group(function (): void {
+        Route::get('datatable', BrowseDailyRecordController::class)->name('datatable');
     });
 });

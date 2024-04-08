@@ -9,10 +9,9 @@ use App\Models\Record\DailyRecord;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
-use Yajra\DataTables\Exceptions\Exception;
 use Yajra\DataTables\Facades\DataTables;
 
-class BrowseDailyRecordController extends Controller
+final class BrowseDailyRecordController extends Controller
 {
     /**
      * Handle the incoming request.

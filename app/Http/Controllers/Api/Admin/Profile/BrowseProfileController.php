@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
-class BrowseProfileController extends Controller
+final class BrowseProfileController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -21,8 +21,8 @@ class BrowseProfileController extends Controller
         try {
             $query = Profile::query();
 
-            $request->whenFilled('name', function (string $name) use ($query) {
-                $query->whereRaw('LOWER(full_name) ILIKE ?', ['%' . strtolower($name) . '%']);
+            $request->whenFilled('name', function (string $name) use ($query): void {
+                $query->whereRaw('LOWER(full_name) ILIKE ?', ['%' . mb_strtolower($name) . '%']);
             });
 
             return DataTables::eloquent($query)->toJson(JSON_PRETTY_PRINT);
