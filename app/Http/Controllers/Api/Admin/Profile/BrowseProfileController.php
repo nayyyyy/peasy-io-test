@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
-final class BrowseProfileController extends Controller
+class BrowseProfileController extends Controller
 {
     /**
      * Handle the incoming request.
