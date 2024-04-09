@@ -10,6 +10,7 @@ use App\Models\Profile\Profile;
 use Cache;
 use DB;
 use Illuminate\Console\Command;
+use Log;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Throwable;
 
@@ -46,6 +47,8 @@ final class SaveProfile
         } else {
             Cache::increment($variableName);
         }
+
+        Log::channel('profile')->info(sprintf('Success save profile with uuid %s', $data->uuid));
     }
 
     /**
@@ -58,12 +61,20 @@ final class SaveProfile
 
     public function asCommand(Command $command): void
     {
-        $client = new RandomUserClient();
+        Log::channel('profile')->info('Start scrap profiles');
 
-        $client
-            ->getUsers((int)$command->argument('result'))
-            ->each(function ($user): void {
-                SaveProfile::dispatch(ProfileData::fromResponse($user));
-            });
+        try {
+            $client = new RandomUserClient();
+
+            $client
+                ->getUsers((int)$command->argument('result'))
+                ->each(function ($user): void {
+                    SaveProfile::dispatch(ProfileData::fromResponse($user));
+                });
+        } catch (Throwable $throwable) {
+            Log::channel('profile')->info('Failed scrap profiles', [
+                'message' => $throwable->getMessage()
+            ]);
+        }
     }
 }

@@ -128,6 +128,16 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'profile' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/profile/profile.log')
+        ],
+
+        'daily-record' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/daily-record/daily-record.log')
+        ]
     ],
 
 ];

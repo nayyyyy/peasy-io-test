@@ -19,7 +19,8 @@ final class BrowseDailyRecordController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         try {
-            $query = DailyRecord::query();
+            $query = DailyRecord::query()
+                ->latest('created_at');
 
             return DataTables::eloquent($query)->toJson(JSON_PRETTY_PRINT);
         } catch (Throwable $throwable) {

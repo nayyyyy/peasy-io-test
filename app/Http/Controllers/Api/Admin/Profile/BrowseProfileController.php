@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
-class BrowseProfileController extends Controller
+final class BrowseProfileController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -19,7 +19,8 @@ class BrowseProfileController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         try {
-            $query = Profile::query();
+            $query = Profile::query()
+                ->latest('created_at');
 
             $request->whenFilled('name', function (string $name) use ($query): void {
                 $query->whereRaw('LOWER(full_name) ILIKE ?', ['%' . mb_strtolower($name) . '%']);
