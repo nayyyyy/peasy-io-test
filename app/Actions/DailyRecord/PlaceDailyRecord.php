@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Profile;
+namespace App\Actions\DailyRecord;
 
 use App\Models\Profile\Profile;
 use App\Models\Record\DailyRecord;

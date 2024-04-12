@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console;
 
-use App\Actions\Profile\PlaceDailyRecord;
+use App\Actions\DailyRecord\PlaceDailyRecord;
+use App\Actions\DailyRecord\SyncUncreatedDailyRecord;
 use App\Actions\Profile\SaveProfile;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -13,7 +14,8 @@ final class Kernel extends ConsoleKernel
 {
     protected $commands = [
         SaveProfile::class,
-        PlaceDailyRecord::class
+        PlaceDailyRecord::class,
+        SyncUncreatedDailyRecord::class
     ];
 
     /**
